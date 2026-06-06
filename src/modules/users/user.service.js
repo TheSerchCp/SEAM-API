@@ -17,7 +17,7 @@ const getByIdUser = async (id) => {
   emitStart('users:fetchOne', `Buscando usuario ${id}...`);
   const user = await userRepository.findById(id);
   if (!user) throw new NotFoundError(`Usuario con id ${id} no encontrado`);
-  emitSuccess('users:fetchOne', `Usuario ${id} encontrado`, { idUser: user.idUser });
+  emitSuccess('users:fetchOne', `Usuario ${user?.full_name} encontrado`, { idUser: user.idUser });
   return user;
 };
 
@@ -45,7 +45,7 @@ const editUser = async (id, data) => {
   await userRepository.update(id, safeData);
   const updated = await userRepository.findById(id);
 
-  emitSuccess('users:update', `Usuario ${id} actualizado exitosamente`, updated);
+  emitSuccess('users:update', `Usuario ${updated?.full_name} actualizado exitosamente`, updated);
   return updated;
 };
 
@@ -54,7 +54,7 @@ const deleteUser = async (id) => {
   const user = await userRepository.findById(id);
   if (!user) throw new NotFoundError(`Usuario con id ${id} no encontrado`);
   await userRepository.delete(id);
-  emitSuccess('users:delete', `Usuario ${id} eliminado`);
+  emitSuccess('users:delete', `Usuario ${user?.full_name} eliminado`);
 };
 
 module.exports = { findAllUsers, getByIdUser, editUser, deleteUser };

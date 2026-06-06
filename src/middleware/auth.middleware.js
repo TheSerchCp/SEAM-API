@@ -1,6 +1,7 @@
 const jwt = require('jsonwebtoken');
 const { JWT } = require('../config/env');
 const { UnauthorizedError } = require('../core/errors/HttpErrors');
+const requestContext = require('../core/requestContext');
 
 /**
  * auth.middleware.js
@@ -27,6 +28,9 @@ module.exports = (req, res, next) => {
   try {
     // jwt.verify lanza excepción si el token está expirado, mal firmado o malformado
     req.user = jwt.verify(token, JWT.secret);
+    // Enriquecer el store del request con el userId autenticado
+    const store = requestContext.getStore();
+    if (store) store.userId = req.user.idUser;
     next(); // Token válido → continúa al siguiente middleware o controlador
   } catch {
     next(new UnauthorizedError('Token inválido o expirado'));

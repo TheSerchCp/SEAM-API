@@ -31,10 +31,19 @@ io.use((socket, next) => {
 });
 
 io.on('connection', (socket) => {
-  console.log(`🔌 Cliente conectado: ${socket.id} (userId: ${socket.user?.id})`);
+  const userId = socket.user?.idUser;
+  console.log(`🔌 Cliente conectado: ${socket.id} (userId: ${userId})`);
 
   // Unir al usuario a su sala privada para emitir eventos dirigidos
-  socket.join(`user:${socket.user?.id}`);
+  if (!userId) {
+    console.warn(`⚠️ Socket ${socket.id} FALLO al conectarse: usuario sin idUser`);
+    socket.disconnect(true);
+    return;
+  }
+  
+  const roomName = `user:${userId}`;
+  socket.join(roomName);
+  console.log(`✅ Socket ${socket.id} unido a sala: ${roomName}`);
 
   socket.on('disconnect', () => {
     console.log(`🔌 Cliente desconectado: ${socket.id}`);

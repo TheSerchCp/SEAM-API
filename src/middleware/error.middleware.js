@@ -1,5 +1,7 @@
 const AppError = require('../core/errors/AppError');
 const { NotFoundError } = require('../core/errors/HttpErrors');
+const { emitError } = require('../core/helpers/socketEvents');
+const requestContext = require('../core/requestContext');
 
 /**
  * error.middleware.js
@@ -46,6 +48,19 @@ const notFoundHandler = (req, res, next) => {
  * Debe registrarse como el ÚLTIMO middleware en app.js.
  */
 const errorHandler = (err, req, res, next) => {
+  // Emitir evento de error al cliente solicitante para ocultar el loader
+  const store = requestContext.getStore();
+  if (store?.currentOperation) {
+    // Sanitizar: solo exponer mensajes de errores operacionales conocidos
+    const safeMsg =
+      (err instanceof AppError && err.isOperational)
+        ? err.message
+        : (err.code && MYSQL_ERROR_MAP[err.code])
+          ? MYSQL_ERROR_MAP[err.code].message
+          : 'Error interno del servidor';
+    emitError(store.currentOperation, safeMsg);
+  }
+
   // Caso 1: Error conocido de MySQL → devuelve mensaje HTTP apropiado
   if (err.code && MYSQL_ERROR_MAP[err.code]) {
     const { status, message } = MYSQL_ERROR_MAP[err.code];

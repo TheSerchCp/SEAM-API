@@ -2,12 +2,14 @@ const express = require('express');
 const cors = require('cors');
 const { CORS_ORIGIN } = require('./config/env');
 const routes = require('./routes');
+const contextMiddleware = require('./middleware/context.middleware');
 const { notFoundHandler, errorHandler } = require('./middleware/error.middleware');
 
 const app = express();
 
 app.use(cors({ origin: CORS_ORIGIN }));
 app.use(express.json({ limit: '1mb' }));
+app.use(contextMiddleware);
 
 app.use('/api/v1', routes);
 
