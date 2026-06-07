@@ -13,6 +13,10 @@ const editUserSchema = {
   password:  { required: false, type: 'string', minLength: 6,  maxLength: 100 },
 };
 
+const enableDisableUserSchema = {
+  isActive:    { required: true, type: 'number' },
+};
+
 const getByIdSchema = {
   id: { required: true, type: 'string', pattern: /^\d+$/ },
 };
@@ -20,6 +24,7 @@ const getByIdSchema = {
 router.get(   '/',    auth, roles, userController.findAllUsers);
 router.get(   '/:id', auth, roles, validate(getByIdSchema, 'params'), userController.getByIdUser);
 router.put(   '/:id', auth, roles, validate(getByIdSchema, 'params'), validate(editUserSchema), userController.editUser);
+router.put(   '/:id/state',auth, roles,validate(enableDisableUserSchema),userController.enableDisabledUser)
 router.delete('/:id', auth, roles, validate(getByIdSchema, 'params'), userController.deleteUser);
 
 module.exports = router;

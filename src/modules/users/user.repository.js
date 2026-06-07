@@ -22,7 +22,7 @@ class UserRepository extends BaseRepository {
   async findAll({ limit = 50, offset = 0 } = {}, connection = null) {
     return this.query(
       `SELECT u.idUser, u.full_name, u.email, u.roleId,
-              r.roleName, r.description AS roleDescription
+              r.roleName, r.description AS roleDescription, CAST(u.isActive AS SIGNED) AS isActive
        FROM users u
        LEFT JOIN roles r ON u.roleId = r.idRole
        ORDER BY u.idUser

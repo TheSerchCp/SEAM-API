@@ -54,6 +54,17 @@ const editUser = async (req, res, next) => {
   }
 };
 
+
+const enableDisabledUser = async (req, res, next) => {
+  try{
+    const user = await userService.enableDisableUserById(req.params.id,req.body);
+    const {isActive} = req.body;
+    success(res,user,'Usuario actualizado exitosamente');
+  }catch(err){
+    next(err);
+  }
+}
+
 const deleteUser = async (req, res, next) => {
   try {
     await userService.deleteUser(Number(req.params.id));
@@ -61,4 +72,4 @@ const deleteUser = async (req, res, next) => {
   } catch (err) { next(err); }
 };
 
-module.exports = { findAllUsers, getByIdUser, editUser, deleteUser };
+module.exports = { findAllUsers, getByIdUser, editUser, deleteUser,enableDisabledUser };

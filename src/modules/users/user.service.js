@@ -49,6 +49,21 @@ const editUser = async (id, data) => {
   return updated;
 };
 
+const enableDisableUserById = async (id,data) => {
+  const {isActive} = data;
+  emitStart('users:update', `Iniciando ${isActive === 1 ? 'activacion' : 'desactivación'} del usuario ${id}...`);
+
+  emitProcessing('users:update', 'Verificando existencia del usuario...');
+  const user = await userRepository.findById(id);
+  if (!user) throw new NotFoundError(`Usuario con id ${id} no encontrado`);
+
+  emitProcessing('users:update', 'Guardando cambios...');
+  await userRepository.update(id, data);
+  const updated = await userRepository.findById(id);
+  emitSuccess('users:update', `Usuario ${updated?.full_name} ${isActive === 1 ? 'activado' : 'desactivado'} exitosamente`, updated);
+  return updated;
+}
+
 const deleteUser = async (id) => {
   emitStart('users:delete', `Eliminando usuario ${id}...`);
   const user = await userRepository.findById(id);
@@ -57,4 +72,4 @@ const deleteUser = async (id) => {
   emitSuccess('users:delete', `Usuario ${user?.full_name} eliminado`);
 };
 
-module.exports = { findAllUsers, getByIdUser, editUser, deleteUser };
+module.exports = { findAllUsers, getByIdUser, editUser, deleteUser,enableDisableUserById };

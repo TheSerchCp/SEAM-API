@@ -37,6 +37,8 @@ const validate = (schema, source = 'body') => (req, res, next) => {
   const errors = [];
 
   for (const [field, rules] of Object.entries(schema)) {
+    console.log(`Validando campo '${field}' con reglas:`, rules);
+    console.log("VALORES RECIBIDOS:", data);
     const value = data[field];
     const isEmpty = value === undefined || value === null || value === '';
 
