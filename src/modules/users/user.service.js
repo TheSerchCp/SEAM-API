@@ -1,5 +1,6 @@
 const bcrypt = require('bcrypt');
 const userRepository = require('./user.repository');
+const roleRespository = require('../roles/roles.repository')
 const { emitStart, emitProcessing, emitSuccess } = require('../../core/helpers/socketEvents');
 const { NotFoundError, ConflictError } = require('../../core/errors/HttpErrors');
 
@@ -66,10 +67,27 @@ const enableDisableUserById = async (id,data) => {
 
 const deleteUser = async (id) => {
   emitStart('users:delete', `Eliminando usuario ${id}...`);
+  
   const user = await userRepository.findById(id);
+  emitProcessing('users:update', 'Verificando existencia del usuario...');
   if (!user) throw new NotFoundError(`Usuario con id ${id} no encontrado`);
   await userRepository.delete(id);
   emitSuccess('users:delete', `Usuario ${user?.full_name} eliminado`);
 };
 
-module.exports = { findAllUsers, getByIdUser, editUser, deleteUser,enableDisableUserById };
+const resetPassword = async(id) => {
+  emitStart('users:update', `Modificando usuario ${id}...`);
+  const user = await userRepository.findOne(id);
+  emitProcessing('users:update', 'Verificando existencia del usuario...');
+  if (!user) throw new NotFoundError(`Usuario con id ${id} no encontrado`);
+  emitProcessing('users:update', 'Verificando existencia del rol de usuario...');
+
+  //Hashear la nueva contraseña que sera user + 123
+  let newPass = ('user') + '123';
+  newPass = await bcrypt.hash(newPass,SALT_ROUNDS);
+  await userRepository.resetPassword(id,newPass);
+  emitSuccess('users:update', `Contraseña reestablecida a usuario${user?.full_name} `);
+}
+
+module.exports = { findAllUsers, getByIdUser, editUser, deleteUser,enableDisableUserById,resetPassword };
+

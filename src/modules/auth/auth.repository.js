@@ -23,7 +23,7 @@ class AuthRepository extends BaseRepository {
   async findByEmailWithRole(email, connection = null) {
     const rows = await this.query(
       `SELECT u.idUser, u.full_name, u.email, u.password, u.roleId,
-              r.roleName
+              r.roleName, CAST(u.isActive AS SIGNED) AS isActive
        FROM users u
        LEFT JOIN roles r ON u.roleId = r.idRole
        WHERE u.email = ?

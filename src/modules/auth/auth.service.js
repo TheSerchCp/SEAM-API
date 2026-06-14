@@ -3,7 +3,7 @@ const jwt = require('jsonwebtoken');
 const { JWT } = require('../../config/env');
 const authRepository = require('./auth.repository');
 const { emitStart, emitProcessing, emitSuccess } = require('../../core/helpers/socketEvents');
-const { ConflictError, UnauthorizedError } = require('../../core/errors/HttpErrors');
+const { ConflictError, UnauthorizedError,InactiveError } = require('../../core/errors/HttpErrors');
 
 const SALT_ROUNDS = 12;
 
@@ -30,6 +30,11 @@ const login = async ({ email, password }) => {
 
   emitProcessing('auth:login', 'Verificando credenciales...');
   const user = await authRepository.findByEmailWithRole(email);
+
+  if(!user) throw new UnauthorizedError("Usuario no encontrado");
+
+  if(user.isActive === 0) throw new InactiveError('Usuario inactivo, contactate con el administrador');
+
   const valid = user ? await bcrypt.compare(password, user.password) : false;
   if (!user || !valid) throw new UnauthorizedError('Credenciales inválidas');
 

@@ -72,4 +72,11 @@ const deleteUser = async (req, res, next) => {
   } catch (err) { next(err); }
 };
 
-module.exports = { findAllUsers, getByIdUser, editUser, deleteUser,enableDisabledUser };
+const resetPassword = async(req, res, next) => {
+  try{
+    await userService.resetPassword(Number(req.params.id))
+    success(res,null,'Contraseña de usuario reestablecida por defecto')
+  }catch(err) {next(err)}
+}
+
+module.exports = { findAllUsers, getByIdUser, editUser, deleteUser,enableDisabledUser,resetPassword };

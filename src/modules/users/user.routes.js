@@ -24,7 +24,8 @@ const getByIdSchema = {
 router.get(   '/',    auth, roles, userController.findAllUsers);
 router.get(   '/:id', auth, roles, validate(getByIdSchema, 'params'), userController.getByIdUser);
 router.put(   '/:id', auth, roles, validate(getByIdSchema, 'params'), validate(editUserSchema), userController.editUser);
-router.put(   '/:id/state',auth, roles,validate(enableDisableUserSchema),userController.enableDisabledUser)
+router.put(   '/:id/state',auth, roles,validate(enableDisableUserSchema),userController.enableDisabledUser);
+router.put(   '/:id/resetPassword',auth, roles,validate(getByIdSchema),userController.resetPassword);
 router.delete('/:id', auth, roles, validate(getByIdSchema, 'params'), userController.deleteUser);
 
 module.exports = router;

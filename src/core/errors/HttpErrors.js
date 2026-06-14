@@ -12,6 +12,12 @@ class UnauthorizedError extends AppError {
   }
 }
 
+class InactiveError extends AppError {
+  constructor(message = 'Usuario inactivo'){
+    super(message,423);
+  }
+}
+
 class ForbiddenError extends AppError {
   constructor(message = 'Acceso denegado') {
     super(message, 403);
@@ -43,4 +49,5 @@ module.exports = {
   NotFoundError,
   ConflictError,
   UnprocessableEntityError,
+  InactiveError
 };

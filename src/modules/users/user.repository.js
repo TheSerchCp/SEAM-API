@@ -32,6 +32,14 @@ class UserRepository extends BaseRepository {
     );
   }
 
+  async resetPassword(id,newPass, connection = null){
+    return this.query(
+      `UPDATE users set password=? where idUser = ?`,
+      [newPass,id],
+      connection
+    ) ;
+  }
+
   /**
    * Busca un usuario por su PK incluyendo el nombre y descripción de su rol.
    * Retorna null si no existe.
@@ -41,7 +49,7 @@ class UserRepository extends BaseRepository {
   async findById(id, connection = null) {
     const rows = await this.query(
       `SELECT u.idUser, u.full_name, u.email, u.roleId,
-              r.roleName, r.description AS roleDescription
+              r.roleName, r.description AS roleDescription,CAST(u.isActive AS SIGNED) AS isActive
        FROM users u
        LEFT JOIN roles r ON u.roleId = r.idRole
        WHERE u.idUser = ?
